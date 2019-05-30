@@ -1,6 +1,6 @@
 
 const preCachedList = [
-    "/", "mission.html", "resources.html", "tours.html",
+    "/", "offline.json", "mission.html", "resources.html", "tours.html",
     "app.js", "weather.js",
     "_css/fonts.css", "_css/main.css", "_css/mobile.css", "_css/tablet.css",
     "_images/back_bug.gif", "_images/desert_desc_bug.gif", "_images/nature_desc_bug.gif",
@@ -13,16 +13,39 @@ const preCachedList = [
 ]
 self.addEventListener("install", event => {
     event.waitUntil(
-        caches.open("california-assets-v1")
+        caches.open("california-assets-v2")
             .then(cache => {
                 cache.addAll(preCachedList);
             })
     );
 });
+
+self.addEventListener("activate", event => {
+    const cacheWhiteList = ["california-assets-v2", "california-fonts"];
+    event.waitUntil(
+        caches.keys()
+            .then(names => {
+                Promise.all(
+                    names.map(cacheName => {
+                        if (cacheWhiteList.indexOf(cacheName) === -1) {
+                            return caches.delete(cacheName);
+                        }
+                    })
+                )
+
+            })
+
+
+    )
+})
 self.addEventListener("fetch", event => {
 
     const requestURL = new URL(event.request.url);
-    if (requestURL.pathname.match(/^\/_css*/)) {
+    if (requestURL.host == "explorecalifornia.org" && !navigator.onLine) {
+        event.respondWith(fetch("offline.json"))
+
+    }
+    else if (requestURL.pathname.match(/^\/_css*/)) {
         //Network first policy for the css
         //     event.respondWith(
         //         fetch(event.request)
@@ -40,7 +63,7 @@ self.addEventListener("fetch", event => {
                     const fetchRequest =
                         fetch(event.request)
                             .then(networkResponse => {
-                                return caches.open("california-assets-v1")
+                                return caches.open("california-assets-v2")
                                     .then(cache => {
                                         cache.put(event.request, networkResponse.clone())
                                         return networkResponse;
