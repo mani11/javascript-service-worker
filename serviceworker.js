@@ -20,6 +20,35 @@ self.addEventListener("install", event => {
     );
 });
 
+self.addEventListener("message", event => {
+    const message = event.data;
+    switch (message.action) {
+        case "update-resources":
+            caches.open("california-assets-v2")
+                .then(cache => {
+                    cache.addAll(preCachedList)
+                        .then(() => {
+                            alertPagesUpdate();
+                        });
+                })
+            break;
+    }
+});
+
+function alertPagesUpdate() {
+    clients.matchAll({
+        includeUncontrolled: false,
+        type: "window"
+
+    }).then(clients => {
+        clients.forEach(client => {
+            client.postMessage({
+                action: "resources-updated"
+            })
+        })
+    })
+}
+
 self.addEventListener("activate", event => {
     const cacheWhiteList = ["california-assets-v2", "california-fonts"];
     event.waitUntil(
