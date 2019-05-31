@@ -14,6 +14,6 @@ It this small project the following use cases of the service worker are demonstr
 2. A server (I used thr live server in VSCode)
 
 ## References :
-LinkedIn course by Maximiliano Firtman - https://www.linkedin.com/learning/vanilla-javascript-service-workers
-Google Guide : https://developers.google.com/web/fundamentals/primers/service-workers/
+1. LinkedIn course by Maximiliano Firtman - https://www.linkedin.com/learning/vanilla-javascript-service-workers
+2. Google Guide : https://developers.google.com/web/fundamentals/primers/service-workers/
 
